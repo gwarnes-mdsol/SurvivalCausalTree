@@ -1,0 +1,6 @@
+testRun1.Rdata:
+
+tree is CT, tree1 is maximizing between group heterogeneity, tree 3 TOT, tree4 fit-based.
+the data have 999 samples, where 128 of them have true negative treatment effect.
+only tree1 have found one subgroup with negative effects, while all groups found by other methods have positive effects.
+
