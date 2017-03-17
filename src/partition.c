@@ -45,8 +45,9 @@ for (i = n1; i < n2; i++) {
         j = -(1 + j);   /* if missing, value = -(1+ true index) */
     ct.wtemp[k] = ct.wt[j];
     //WJ: added
-    ct.propensitytemp[k]=ct.propensity[j];
-    ct.censoringProbtemp[k]=ct.censoringProb[j];
+    ct.propensitytemp[k] = ct.propensity[j];
+    ct.censoringProbtemp[k] = ct.censoringProb[j];
+    //ct.completeCasetemp[k] = ct.censoringProb[j];
     //printf("%f\t",ct.censoringProbtemp[k]);
     ct.trtemp[k] = ct.treatment[j];
     ct.ytemp[k] = ct.ydata[j];
@@ -89,7 +90,8 @@ for (i = n1; i < n2; i++) {
   } else if (split_Rule == 9) {
     // user (temporarily set as CT)
     (*ct_eval) (n, ct.ytemp, me->response_est, me->controlMean, me->treatMean,
-     &(me->risk), ct.wtemp, ct.trtemp, ct.max_y, alpha, train_to_est_ratio, ct.propensitytemp, ct.censoringProbtemp);
+     &(me->risk), ct.wtemp, ct.trtemp, ct.max_y, alpha, train_to_est_ratio,
+     ct.propensitytemp, ct.censoringProbtemp);
     //printf("%d\t",ct.completeCasetemp[2]);
   } else if (split_Rule == 10) {
     // userD (temporarily set as CTD)

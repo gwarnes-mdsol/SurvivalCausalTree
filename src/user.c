@@ -41,7 +41,6 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 		double *risk, double *wt, double *treatment, double max_y,
 		double alpha, double train_to_est_ratio, double *propensity, double *censoringProb)
 {
-  //Rprintf("%f\n", censoringProb[2]);
 	int i;
 	double temp0 = 0., temp1 = 0., twt = 0.; /* sum of the weights */
 	double ttreat = 0.,tcon = 0.;
@@ -50,10 +49,17 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 	double con_sqr_sum = 0., tr_sqr_sum = 0.;
 	double pp = 0.;
 	for (i = 0; i < n; i++) {
-		temp1 += *y[i] * wt[i] * treatment[i] / propensity[i];
+		//temp1 += *y[i] * wt[i] * treatment[i] / propensity[i] / censoringProb[i];
+	  temp1 += *y[i] * wt[i] * treatment[i] / propensity[i];
+
+		//temp0 += *y[i] * wt[i] * (1 - treatment[i]) / (1-propensity[i]) / censoringProb[i];
 		temp0 += *y[i] * wt[i] * (1 - treatment[i]) / (1-propensity[i]);
+
 		twt += wt[i];
+		//ttreat += wt[i] * treatment[i] / propensity[i] / censoringProb[i];
 		ttreat += wt[i] * treatment[i] / propensity[i];
+
+		//tcon += wt[i] * (1-treatment[i]) / (1-propensity[i]) / censoringProb[i];
 		tcon += wt[i] * (1-treatment[i]) / (1-propensity[i]);
 
 		tr_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * treatment[i];
@@ -67,8 +73,8 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 	*tr_mean = temp1 / ttreat;
 	*con_mean = temp0 / tcon;
 	*value = effect;
-	*risk = 4 * twt * max_y * max_y - alpha * twt * effect * effect;
-		//(1 - alpha) * (1 + train_to_est_ratio) * twt * (tr_var /ttreat  + con_var / (twt - ttreat));
+	*risk = 4 * twt * max_y * max_y - alpha * twt * effect * effect +
+	        (1 - alpha) * (1 + train_to_est_ratio) * twt * (tr_var /ttreat  + con_var / (twt - ttreat));
 }
 int compare_double(const void *a,const void *b) {
   double *x = (double *) a;
@@ -87,8 +93,7 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		int *csplit, double myrisk, double *wt, double *treatment, int minsize, double alpha,
 		double train_to_est_ratio, double *propensity, double *censoringProb)
 {
-  //Rprintf("%f\t",propensity[2]);
-  Rprintf("%f\t",censoringProb[3]);
+
 	int i, j;
 	double temp;
 	double left_sum, right_sum;

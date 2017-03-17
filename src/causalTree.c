@@ -85,7 +85,8 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     /* WJ: propensity score as a vector */
     double *propensity;
     /* WJ: add complete case indicator */
-    int *censoringProb;
+    double *censoringProb;
+    int *completeCase;
 
     double split_alpha, cv_alpha;
     int NumHonest;

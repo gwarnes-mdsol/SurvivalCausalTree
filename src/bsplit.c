@@ -30,6 +30,7 @@ bsplit(pNode me, int n1, int n2, int minsize, int split_Rule, double alpha, int 
     double *trtemp;
     double *propensitytemp;
     double *censoringProbtemp;
+    int *completeCasetemp;
 
     xtemp = ct.xtemp;
     ytemp = ct.ytemp;
@@ -37,6 +38,7 @@ bsplit(pNode me, int n1, int n2, int minsize, int split_Rule, double alpha, int 
     trtemp = ct.trtemp;
     propensitytemp = ct.propensitytemp;
     censoringProbtemp = ct.censoringProbtemp;
+    //completeCasetemp = ct.completeCasetemp;
     //checked
     //printf("%p\t",propensitytemp);
     /*
@@ -59,6 +61,7 @@ bsplit(pNode me, int n1, int n2, int minsize, int split_Rule, double alpha, int 
                 trtemp[k] = ct.treatment[kk];
                 propensitytemp[k] = ct.propensity[kk];
                 censoringProbtemp[k] = ct.censoringProb[kk];
+                //completeCasetemp[k] = ct.completeCase[kk];
                 //checked
                 //printf("%f\t",propensitytemp[k]);
                 k++;
@@ -108,7 +111,8 @@ bsplit(pNode me, int n1, int n2, int minsize, int split_Rule, double alpha, int 
             // user (temporarily set as CT)
             //printf("%d\t",completeCasetemp[1]);
             (*ct_choose) (k, ytemp, xtemp, nc, ct.min_node, &improve,
-             &split, ct.csplit, me->risk, wtemp, trtemp, minsize, alpha, train_to_est_ratio, propensitytemp, censoringProbtemp);
+             &split, ct.csplit, me->risk, wtemp, trtemp, minsize, alpha,
+             train_to_est_ratio, propensitytemp, censoringProbtemp, completeCasetemp);
         } else if (split_Rule == 10) {
             // userD (temporarily set as CTD)
             (*ct_choose) (k, ytemp, xtemp, nc, ct.min_node, &improve,

@@ -286,8 +286,8 @@ causalTree <- function(formula, data, weights, treatment, subset,
 		minsize <- as.integer(minsize) # minimum number of obs for treated and control cases in one leaf node
     completeCase <- as.integer(completeCase)
     #estimate censoring distribution, pass the estimation as parameter to .Call
-    Y<-rpois(999,365)
-    completeCase<-rbinom(999,1,0.34)
+    # Y<-rpois(999,365)
+    # completeCase<-rbinom(999,1,0.34)
     treated <- Y[treatment==1];
     treated.cc <- 1 - completeCase[treatment==1];
     treated.data <- as.data.frame(cbind(treated, treated.cc))

@@ -106,10 +106,10 @@ extern int userinit(int n, double *y[], int maxcat, char **error,
                   int bucketMax, double *train_to_est_ratio);
 extern void userss(int n, double *y[], double *value, double *tr_mean, double *con_mean, double *risk,
                  double *wt, double *treatment, double max_y, double alpha, double train_to_est_ratio,
-                 double *propensity, double *censoringProb);
+                 double *propensity, double *censoringProb, int *completeCase);
 extern void user(int n, double *y[], double *x, int nclass,int edge, double *improve, double *split,
                int *csplit, double myrisk, double *wt, double *treatment, int minsize, double alpha,
-               double train_to_est_ratio, double *propensity, double *censoringProb);
+               double train_to_est_ratio, double *propensity, double *censoringProb, int *completeCase);
 extern double userpred(double *y, double wt, double treatment, double *yhat, double propensity);
 
 extern int userDinit(int n, double *y[], int maxcat, char **error, int *size,
