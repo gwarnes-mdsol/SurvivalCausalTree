@@ -57,7 +57,7 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
            SEXP crossmeth2, SEXP crosshonest2, SEXP opt2,
            SEXP minsize2, SEXP p2, SEXP xvals2, SEXP xgrp2,
         SEXP ymat2, SEXP xmat2, SEXP wt2, SEXP treatment2, SEXP ny2, SEXP cost2,
-        SEXP xvar2, SEXP split_alpha2, SEXP cv_alpha2, SEXP NumHonest2, SEXP censoringProb2)
+        SEXP xvar2, SEXP split_alpha2, SEXP cv_alpha2, SEXP NumHonest2, SEXP censoringProb2, SEXP completeCase2)
 {
     pNode tree;          /* top node of the tree */
     char *errmsg;
@@ -125,6 +125,8 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     bucketMax = asInteger(bucketMax2);
     NumHonest = asInteger(NumHonest2);
     censoringProb = REAL(censoringProb2);
+    completeCase = INTEGER(completeCase2);
+
     int split_id, cv_id;
 
     /*
@@ -170,13 +172,10 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     ct.propensity = propensity;
     ct.iscale = 0.0;
     ct.vcost = REAL(cost2);
-    //added WJ
+    //WJ: added
     ct.censoringProb = censoringProb;
-//    for (i=0; i<n; i++){
-//      printf("%d\t",completeCase[i]);
-//    }
-    //printf("%p\t",ct.completeCase);
-    //printf("%p\t",completeCase);
+    ct.completeCase = completeCase;
+
     ct.xvar = REAL(xvar2);
     ct.NumXval = xvals;
 
@@ -213,6 +212,7 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     ct.trtemp = (double *) ALLOC(n, sizeof(double));
     ct.propensitytemp = (double *) ALLOC(n,sizeof(double));
     ct.censoringProbtemp = (double *) ALLOC(n,sizeof(double));
+    ct.completeCasetemp = (int *) ALLOC(n,sizeof(int));
     /*
      * create a matrix of sort indices, one for each continuous variable
      *   This sort is "once and for all".
@@ -279,9 +279,6 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
         temp2 += treatment[i];
         //++jj;
         //printf("%d\n",jj);
-        //WJ:here propensity[i] is value, so propensity is an array, ct.propensity is also an array
-        //printf("%f\n",propensity[i]);
-        //printf("%p\n",wt);
     }
 
     train_to_est_ratio = 100;
@@ -337,7 +334,7 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     } else if (split_Rule == 9) {
         // user (temporarily set as CT)
         (*ct_eval) (n, ct.ydata, tree->response_est, tree->controlMean, tree->treatMean,
-         &(tree->risk), wt, treatment, ct.max_y, split_alpha, train_to_est_ratio, propensity, censoringProb);
+         &(tree->risk), wt, treatment, ct.max_y, split_alpha, train_to_est_ratio, propensity, censoringProb, completeCase);
         //printf("%d\t",completeCase[1]);
     } else if (split_Rule == 10) {
         // userD (temporarily set as CTD)

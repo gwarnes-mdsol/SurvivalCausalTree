@@ -288,26 +288,26 @@ causalTree <- function(formula, data, weights, treatment, subset,
     #estimate censoring distribution, pass the estimation as parameter to .Call
     # Y<-rpois(999,365)
     # completeCase<-rbinom(999,1,0.34)
-    treated <- Y[treatment==1];
-    treated.cc <- 1 - completeCase[treatment==1];
-    treated.data <- as.data.frame(cbind(treated, treated.cc))
-    control <- Y[treatment==0];
-    control.cc <- 1 - completeCase[treatment==0];
-    control.data <- as.data.frame(cbind(control, control.cc))
-    colnames(treated.data) <- c("time","status"); colnames(control.data) <- c("time","status")
-    treated.surv <- survfit(Surv(time,status)~1, treated.data)
-    control.surv <- survfit(Surv(time,status)~1, control.data)
-    treated.survest <- stepfun(treated.surv$time, c(1, treated.surv$surv))
-    control.survest <- stepfun(control.surv$time, c(1, control.surv$surv))
-    censoringProb <- vector(length = length(Y))
-    #reconstruct the censoring probability vector
-    for (i in 1:length(Y)){
-      if (i %in% which(treatment == 1))
-        censoringProb[i] <- treated.survest(Y[i])
-      else
-        censoringProb[i] <- control.survest(Y[i])
-    }
-
+    # treated <- Y[treatment==1];
+    # treated.cc <- 1 - completeCase[treatment==1];
+    # treated.data <- as.data.frame(cbind(treated, treated.cc))
+    # control <- Y[treatment==0];
+    # control.cc <- 1 - completeCase[treatment==0];
+    # control.data <- as.data.frame(cbind(control, control.cc))
+    # colnames(treated.data) <- c("time","status"); colnames(control.data) <- c("time","status")
+    # treated.surv <- survfit(Surv(time,status)~1, treated.data)
+    # control.surv <- survfit(Surv(time,status)~1, control.data)
+    # treated.survest <- stepfun(treated.surv$time, c(1, treated.surv$surv))
+    # control.survest <- stepfun(control.surv$time, c(1, control.surv$surv))
+    # censoringProb <- vector(length = length(Y))
+    # #reconstruct the censoring probability vector
+    # for (i in 1:length(Y)){
+    #   if (i %in% which(treatment == 1))
+    #     censoringProb[i] <- treated.survest(Y[i])
+    #   else
+    #     censoringProb[i] <- control.survest(Y[i])
+    # }
+    censoringProb <- censoringProbability(Y,treatment,completeCase)
     print("hello world")
     ctfit <- .Call(C_causalTree,
 					   ncat = as.integer(cats * !isord),
@@ -332,7 +332,8 @@ causalTree <- function(formula, data, weights, treatment, subset,
 					   as.double(split.alpha),
 					   as.double(cv.alpha),
 					   as.integer(HonestSampleSize),
-					   censoringProb
+					   censoringProb,
+					   completeCase
 					   )
 
 		nsplit <- nrow(ctfit$isplit) # total number of splits, primary and surrogate

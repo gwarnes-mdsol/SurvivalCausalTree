@@ -50,8 +50,8 @@ EXTERN struct {
     double *propensitytemp;
     double *censoringProbtemp;
     double *censoringProb;
-    //int *completeCase;
-    //int *completeCasetemp;
+    int *completeCase;
+    int *completeCasetemp;
     //
     double *wtemp;              /* temp vector of weights */
     double *trtemp;             /* temp vector of treatment status */

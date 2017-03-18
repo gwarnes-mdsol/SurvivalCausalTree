@@ -38,9 +38,7 @@ bsplit(pNode me, int n1, int n2, int minsize, int split_Rule, double alpha, int 
     trtemp = ct.trtemp;
     propensitytemp = ct.propensitytemp;
     censoringProbtemp = ct.censoringProbtemp;
-    //completeCasetemp = ct.completeCasetemp;
-    //checked
-    //printf("%p\t",propensitytemp);
+    completeCasetemp = ct.completeCasetemp;
     /*
      * test out the variables 1 at at time
      */
@@ -61,9 +59,8 @@ bsplit(pNode me, int n1, int n2, int minsize, int split_Rule, double alpha, int 
                 trtemp[k] = ct.treatment[kk];
                 propensitytemp[k] = ct.propensity[kk];
                 censoringProbtemp[k] = ct.censoringProb[kk];
-                //completeCasetemp[k] = ct.completeCase[kk];
-                //checked
-                //printf("%f\t",propensitytemp[k]);
+                completeCasetemp[k] = ct.completeCase[kk];
+
                 k++;
             }
         }

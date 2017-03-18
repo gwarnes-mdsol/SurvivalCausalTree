@@ -39,8 +39,9 @@ userinit(int n, double *y[], int maxcat, char **error,
 void
 userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 		double *risk, double *wt, double *treatment, double max_y,
-		double alpha, double train_to_est_ratio, double *propensity, double *censoringProb)
+		double alpha, double train_to_est_ratio, double *propensity, double *censoringProb, int *completeCase)
 {
+  printf("%f\t", censoringProb[5]);
 	int i;
 	double temp0 = 0., temp1 = 0., twt = 0.; /* sum of the weights */
 	double ttreat = 0.,tcon = 0.;
@@ -49,21 +50,34 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 	double con_sqr_sum = 0., tr_sqr_sum = 0.;
 	double pp = 0.;
 	for (i = 0; i < n; i++) {
-		//temp1 += *y[i] * wt[i] * treatment[i] / propensity[i] / censoringProb[i];
-	  temp1 += *y[i] * wt[i] * treatment[i] / propensity[i];
 
-		//temp0 += *y[i] * wt[i] * (1 - treatment[i]) / (1-propensity[i]) / censoringProb[i];
+		temp1 += *y[i] * wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + 0.01);
+		temp0 += *y[i] * wt[i] * (1 - treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + 0.01);
+		ttreat += wt[i] * treatment[i] / propensity[i] * completeCase[i] / (censoringProb[i] + 0.01);
+		tcon += wt[i] * (1-treatment[i]) / (1-propensity[i]) * completeCase[i] / (censoringProb[i] + 0.01);
+		tr_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * treatment[i] * completeCase[i] ;
+		con_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * (1- treatment[i]) * completeCase[i];
+
+
+		/*
+		 *  temp1 += *y[i] * wt[i] * treatment[i] * completeCase[i] / propensity[i];
+		 temp0 += *y[i] * wt[i] * (1 - treatment[i]) * completeCase[i] / (1-propensity[i]);
+		 ttreat += wt[i] * treatment[i] / propensity[i] * completeCase[i] ;
+		 tcon += wt[i] * (1-treatment[i]) / (1-propensity[i]) * completeCase[i] ;
+		 tr_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * treatment[i] * completeCase[i] ;
+		 con_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * (1- treatment[i]) * completeCase[i];
+		 */
+
+		/*
+		temp1 += *y[i] * wt[i] * treatment[i] / propensity[i];
 		temp0 += *y[i] * wt[i] * (1 - treatment[i]) / (1-propensity[i]);
-
 		twt += wt[i];
-		//ttreat += wt[i] * treatment[i] / propensity[i] / censoringProb[i];
 		ttreat += wt[i] * treatment[i] / propensity[i];
-
-		//tcon += wt[i] * (1-treatment[i]) / (1-propensity[i]) / censoringProb[i];
 		tcon += wt[i] * (1-treatment[i]) / (1-propensity[i]);
-
 		tr_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * treatment[i];
 		con_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * (1- treatment[i]);
+    //*/
+
 	}
 
 	effect = temp1 / ttreat - temp0 / tcon;
@@ -91,9 +105,9 @@ int compare_int( const void* a, const void* b )
 
 void user(int n, double *y[], double *x, int nclass, int edge, double *improve, double *split,
 		int *csplit, double myrisk, double *wt, double *treatment, int minsize, double alpha,
-		double train_to_est_ratio, double *propensity, double *censoringProb)
+		double train_to_est_ratio, double *propensity, double *censoringProb, int *completeCase)
 {
-
+  //printf("%d\t",completeCase[1]);
 	int i, j;
 	double temp;
 	double left_sum, right_sum;

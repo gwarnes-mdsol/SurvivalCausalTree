@@ -61,7 +61,7 @@ for (ii in 1:p) {
   if (ii>1) {name <- c(name, nextx)}
 }
 
-name <- c( name,  "y", "w", "completeCase", "tau_true")
+name <- c( name,  "y", "w", "completeCase", "tau_true", "propensity")
 
 tau_true <- (1-2*w)*(y_ - y)
 
@@ -69,9 +69,11 @@ ntr <- round(.333*n)
 nest <- round(.333*n)
 ntest <- n - ntr - nest
 
-dataTrain <- data.frame(X[1:ntr,], y[1:ntr], w[1:ntr], event[1:ntr], tau_true[1:ntr])
-dataEst <- data.frame(X[(ntr+1):(ntr+nest),], y[(ntr+1):(ntr+nest)], w[(ntr+1):(ntr+nest)], event[(ntr+1):(ntr+nest)], tau_true[(ntr+1):(ntr+nest)])
-dataTest <- data.frame(X[(ntr+nest+1):n,], y[(ntr+nest+1):n], w[(ntr+nest+1):n], event[(ntr+nest+1):n], tau_true[(ntr+nest+1):n])
+dataTrain <- data.frame(X[1:ntr,], y[1:ntr], w[1:ntr], event[1:ntr], tau_true[1:ntr], propens)
+dataEst <- data.frame(X[(ntr+1):(ntr+nest),], y[(ntr+1):(ntr+nest)], w[(ntr+1):(ntr+nest)],
+                      event[(ntr+1):(ntr+nest)], tau_true[(ntr+1):(ntr+nest)], propens)
+dataTest <- data.frame(X[(ntr+nest+1):n,], y[(ntr+nest+1):n], w[(ntr+nest+1):n],
+                       event[(ntr+nest+1):n], tau_true[(ntr+nest+1):n], propens)
 
 names(dataTrain)=name
 names(dataEst)=name
@@ -83,5 +85,6 @@ cv.option.temp = "CT"
 
 tree2 <- causalTree(as.formula(paste("y~",paste(f))),
                     data=dataTrain, treatment=dataTrain$w,
-                    split.Rule="survival", split.Honest=F, cv.option="CT", minsize = 50,
-                    split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = rep(.5,999), completeCase = dataTrain$completeCase)
+                    split.Rule="survival", split.Honest=F, cv.option="CT", minsize = 20,
+                    split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
+                    completeCase = dataTrain$completeCase)
