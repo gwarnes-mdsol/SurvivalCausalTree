@@ -4,7 +4,7 @@
 #include <math.h>
 #include "causalTree.h"
 #include "causalTreeproto.h"
-#define SMLNUM (1e-10)
+#define SMLNUM (0)
 
 static double *sums, *wtsums, *treatment_effect;
 static double *wts, *trs, *trsums;
@@ -51,14 +51,13 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 	double con_sqr_sum = 0., tr_sqr_sum = 0.;
 	double pp = 0.;
 	for (i = 0; i < n; i++) {
-
+    printf("%f\t",censoringProb[i]);
 		temp1 += *y[i] * wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + SMLNUM);
 		temp0 += *y[i] * wt[i] * (1 - treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + SMLNUM);
     twt += wt[i];
 		ttreat += wt[i] * treatment[i] / propensity[i] * completeCase[i] / (censoringProb[i] + SMLNUM);
 		tcon += wt[i] * (1-treatment[i]) / (1-propensity[i]) * completeCase[i] / (censoringProb[i] + SMLNUM);
-		tr_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * treatment[i] * completeCase[i] ;
-		con_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * (1- treatment[i]) * completeCase[i];
+
     //*/
 
     /*
@@ -90,7 +89,7 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 	*value = effect;
 	*risk = 4 * twt * max_y * max_y - alpha * twt * effect * effect +
 	        (1 - alpha) * (1 + train_to_est_ratio) * twt * (tr_var /ttreat  + con_var / (twt - ttreat));
-  /*
+
 	printf("\n%f\t value\n", *value);
 	printf("%f\t risk\n", *risk);
 	printf("%f\t tr_mean\n", *tr_mean);
@@ -186,7 +185,7 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		left_con = 0;
 		left_tr2 = 0;
 		for (i = 0; right_n > edge; i++) {
-      printf("%f\t", censoringProb[i]);
+      //printf("%f\t", censoringProb[i]);
 		  left_wt += wt[i];
 		  right_wt -= wt[i];
 		  left_tr2 += wt[i] * treatment[i];  // used for node size condition
