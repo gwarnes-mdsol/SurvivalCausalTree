@@ -308,7 +308,7 @@ causalTree <- function(formula, data, weights, treatment, subset,
     #     censoringProb[i] <- control.survest(Y[i])
     # }
     censoringProb <- censoringProbability(Y,treatment,completeCase)
-    censoringProb <- rep(0.99,length(censoringProb))
+    censoringProb <- rep(1,length(censoringProb))
     print("hello world")
     ctfit <- .Call(C_causalTree,
 					   ncat = as.integer(cats * !isord),

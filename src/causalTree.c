@@ -187,6 +187,7 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
         dptr += n;
     }
 
+    // this block find the maximum y (outcome) value in the data matrix
     ct.ydata = (double **) ALLOC(n, sizeof(double *));
 
     dptr = REAL(ymat2);
@@ -200,7 +201,7 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     }
     ct.max_y = temp2;
 
-    //printf("\n temp2 ct.max_y %f\n", ct.max_y);
+    printf("\n temp2 ct.max_y %f\n", ct.max_y);
 
 
     /*

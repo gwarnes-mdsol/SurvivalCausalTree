@@ -89,11 +89,15 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 	*value = effect;
 	*risk = 4 * twt * max_y * max_y - alpha * twt * effect * effect;
 
-  /*
+  // twt means "total weight"
 	printf("\n%f\t value\n", *value);
 	printf("%f\t risk\n", *risk);
 	printf("%f\t tr_mean\n", *tr_mean);
 	printf("%f\t con_mean\n", *con_mean);
+	printf("%f\t twt\n", twt);
+	printf("%f\t max_y\n", max_y);
+
+
 	//*/
 }
 
@@ -217,15 +221,24 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		  left_con_sum += temp2;
 		  right_con_sum -= temp2;
       //*/
-      printf("above the loop\n");
+      /*
+      printf("left_tr_sum\t %f\n", left_tr_sum);
+      printf("left_tr\t %f\n", left_tr);
+      printf("left_right_sum\t %f\n", right_tr_sum);
+      printf("left_tr\t %f\n", right_tr);
+      //*/
+      //printf("above the loop\n");
 		  if (x[i + 1] != x[i] && left_n >= edge &&
         (int) left_tr2 >= min_node_size &&
         (int) left_wt - (int) left_tr2 >= min_node_size &&
         (int) right_tr2 >= min_node_size &&
         (int) right_wt - (int) right_tr2 >= min_node_size) {
-        printf("in the loop\n");
-		    left_temp = left_tr_sum / left_tr - left_con_sum / left_con;
-		    right_temp = right_tr_sum / right_tr -right_con_sum / right_con;
+        //printf("in the loop\n");
+		    left_temp = 1.;
+		    right_temp = 1.;
+		    //left_temp = left_tr_sum / left_tr - left_con_sum / left_con;
+
+		    //right_temp = right_tr_sum / right_tr -right_con_sum / right_con;
 
 		    left_effect = alpha * left_temp * left_temp * left_wt;
 		    right_effect = alpha * right_temp * right_temp * right_wt;

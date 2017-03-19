@@ -65,6 +65,12 @@ CTss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
     *value = effect;
     *risk = 4 * twt * max_y * max_y - alpha * twt * effect * effect +
     (1 - alpha) * (1 + train_to_est_ratio) * twt * (tr_var /ttreat  + con_var / (twt - ttreat));
+    printf("\n%f\t value\n", *value);
+    printf("%f\t risk\n", *risk);
+    printf("%f\t tr_mean\n", *tr_mean);
+    printf("%f\t con_mean\n", *con_mean);
+    printf("%f\t twt\n", twt);
+    printf("%f\t max_y\n", max_y);
 }
 
 
