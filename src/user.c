@@ -113,8 +113,6 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		int *csplit, double myrisk, double *wt, double *treatment, int minsize, double alpha,
 		double train_to_est_ratio, double *propensity, double *censoringProb, int *completeCase)
 {
-  //printf("\n running user \n");
-  //printf("%d\t",completeCase[1]);
 	int i, j;
 	double temp, temp2;
 	double left_sum, right_sum;
@@ -134,7 +132,7 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 	double left_tr_var, left_con_var, right_tr_var, right_con_var;
 
 	//added definition
-	double right_con_sum, right_con, left_con, left_con_sum, left_tr2, right_tr2;
+	double right_con_sum, right_con, right_tr2, left_con, left_con_sum, left_tr2;
 
 	right_wt = 0.;
 	right_tr = 0.;
@@ -149,36 +147,29 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 	right_tr2 = 0.;
 
 	for (i = 0; i < n; i++) {
-	  /*
-	  right_wt += wt[i];
-	  right_tr += wt[i] * treatment[i];
-	  right_sum += *y[i] * wt[i];
-	  right_tr_sum += *y[i] * wt[i] * treatment[i];
-	  right_sqr_sum += (*y[i]) * (*y[i]) * wt[i];
-	  right_tr_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * treatment[i];
-	  //*/
     //WJ: added
+
     right_tr2 += wt[i] * treatment[i]; // used for node size condition
 		right_wt += wt[i]; // used for node size condition
-		/*
+
+    /*
 		right_tr += wt[i] * treatment[i] / propensity[i];
-		right_con += wt[i] * (1-treatment[i]) / (1-propensity[i]);
 		right_tr_sum += *y[i] * wt[i] * treatment[i] / propensity[i];
+		right_con += wt[i] * (1-treatment[i]) / (1-propensity[i]);
 		right_con_sum += *y[i] * wt[i] * (1-treatment[i]) / (1-propensity[i]);
 		//*/
-		right_tr += wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + 1e-10);
-		right_con += wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + 1e-10);
-		right_tr_sum += *y[i] * wt[i] * treatment[i] * completeCase[i]/ propensity[i] / (censoringProb[i] + 1e-10);
-		right_con_sum += *y[i] * wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + 1e-10);
+
+		///*
+		right_tr += wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i]);
+		right_con += wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i]);
+		right_tr_sum += *y[i] * wt[i] * treatment[i] * completeCase[i]/ propensity[i] / (censoringProb[i]);
+		right_con_sum += *y[i] * wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i]);
+		//*/
 	}
 
 	temp = right_tr_sum / right_tr - right_con_sum / right_con;
-	//tr_var = right_tr_sqr_sum / right_tr - right_tr_sum * right_tr_sum / (right_tr * right_tr);
-	//con_var = (right_sqr_sum - right_tr_sqr_sum) / (right_wt - right_tr)
-	  //- (right_sum - right_tr_sum) * (right_sum - right_tr_sum) / ((right_wt - right_tr) * (right_wt - right_tr));
 	node_effect = alpha * temp * temp * right_wt;
-	  //- (1 - alpha) * (1 + train_to_est_ratio) * right_wt * (tr_var / right_tr  + con_var / (right_wt - right_tr));
-
+  //printf("%f\n", node_effect);
 	if (nclass == 0) {
 		/* continuous predictor */
 		left_wt = 0;
@@ -194,24 +185,32 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		left_con = 0;
 		left_tr2 = 0;
 		for (i = 0; right_n > edge; i++) {
-		  /*
-		  left_wt += wt[i];
-		  right_wt -= wt[i];
-		  left_tr += wt[i] * treatment[i];
-		  right_tr -= wt[i] * treatment[i];
-		  left_n++;
-		  right_n--;
-		  temp = *y[i] * wt[i] * treatment[i];
-		  left_tr_sum += temp;
-		  right_tr_sum -= temp;
-		  left_sum += *y[i] * wt[i];
-		  right_sum -= *y[i] * wt[i];
-      //*/
-		  //added
+
 		  left_wt += wt[i];
 		  right_wt -= wt[i];
 		  left_tr2 += wt[i] * treatment[i];  // used for node size condition
 		  right_tr2 -= wt[i] * treatment[i]; // used for node size condition
+
+      left_tr += wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i]);
+      left_con += wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i]);
+      right_tr -= wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i]);
+      right_con -= wt[i] * (1-treatment[i]) / (1-propensity[i]);
+
+		  left_n++;
+		  right_n--;
+
+		  temp = *y[i] * wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i]);
+		  left_tr_sum += temp;
+		  right_tr_sum -= temp;
+		  temp2 = *y[i] * wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i]);
+		  left_con_sum += temp2;
+		  right_con_sum -= temp2;
+		  //*/
+		  /*
+		  left_wt += wt[i]; //number of samples in left node
+		  right_wt -= wt[i]; //number of samples in right node
+		  left_tr2 += wt[i] * treatment[i];  // number of treated samples in left node
+		  right_tr2 -= wt[i] * treatment[i]; // number of treated samples in left node
 
 		  left_tr += wt[i] * treatment[i] / propensity[i];
 		  right_tr -= wt[i] * treatment[i] / propensity[i];
@@ -219,20 +218,15 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		  left_con += wt[i] * (1-treatment[i]) / (1-propensity[i]);
 		  right_con -= wt[i] * (1-treatment[i]) / (1-propensity[i]);
 
-      left_tr += wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + 0.01);
-      left_con += wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + 0.01);
-      right_tr -= wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + 0.01);
-      right_con -= wt[i] * (1-treatment[i]) / (1-propensity[i]);
-
 		  left_n++;
 		  right_n--;
 
-		  temp = *y[i] * wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + 0.01);
+		  temp = *y[i] * wt[i] * treatment[i] / propensity[i];
 		  left_tr_sum += temp;
 		  right_tr_sum -= temp;
-		  temp2 = *y[i] * wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + 0.01);
-		  left_con_sum += temp;
-		  right_con_sum -= temp;
+		  temp2 = *y[i] * wt[i] * (1-treatment[i]) / (1-propensity[i]);
+		  left_con_sum += temp2;
+		  right_con_sum -= temp2;
 
 		  if (x[i + 1] != x[i] && left_n >= edge &&
         (int) left_tr2 >= min_node_size &&
@@ -241,13 +235,11 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
         (int) right_wt - (int) right_tr2 >= min_node_size) {
 
 		    left_temp = left_tr_sum / left_tr - left_con_sum / left_con;
-		    left_effect = alpha * left_temp * left_temp * left_wt;
-
 		    right_temp = right_tr_sum / right_tr -right_con_sum / right_con;
-		    right_effect = alpha * right_temp * right_temp * right_wt;
 
+		    left_effect = alpha * left_temp * left_temp * left_wt;
+		    right_effect = alpha * right_temp * right_temp * right_wt;
 		    temp = left_effect + right_effect - node_effect;
-		    //printf(" temp split improvement %f\n", temp);
 		    if (temp > best) {
 		      best = temp;
 		      where = i;

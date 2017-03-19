@@ -113,6 +113,7 @@ void CT(int n, double *y[], double *x, int nclass, int edge, double *improve, do
         / ((right_wt - right_tr) * (right_wt - right_tr));
     node_effect = alpha * temp * temp * right_wt - (1 - alpha) * (1 + train_to_est_ratio)
         * right_wt * (tr_var / right_tr  + con_var / (right_wt - right_tr));
+    //printf("%f\n", node_effect);
 
     if (nclass == 0) {
         /* continuous predictor */
@@ -172,8 +173,10 @@ void CT(int n, double *y[], double *x, int nclass, int edge, double *improve, do
                 right_effect = alpha * right_temp * right_temp * right_wt
                         - (1 - alpha) * (1 + train_to_est_ratio) * right_wt *
                             (right_tr_var / right_tr + right_con_var / (right_wt - right_tr));
+
+                //printf("right node effect by user %f\n", right_temp);
                 //alpha = weight parameter for error function
-                //right_wt-right_tr = right_con (number of control samples in the right lesaf)
+                //right_wt-right_tr = right_con (number of control samples in the right leaf)
                 temp = left_effect + right_effect - node_effect;
                 if (temp > best) {
                     best = temp;
