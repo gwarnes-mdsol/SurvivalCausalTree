@@ -4,7 +4,7 @@
 #include <math.h>
 #include "causalTree.h"
 #include "causalTreeproto.h"
-#define SMLNUM (0)
+#define SMLNUM (1e-3)
 
 static double *sums, *wtsums, *treatment_effect;
 static double *wts, *trs, *trsums;
@@ -51,7 +51,7 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 	double con_sqr_sum = 0., tr_sqr_sum = 0.;
 	double pp = 0.;
 	for (i = 0; i < n; i++) {
-    printf("%f\t",censoringProb[i]);
+    //printf("%f\t",censoringProb[i]);
 		temp1 += *y[i] * wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + SMLNUM);
 		temp0 += *y[i] * wt[i] * (1 - treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + SMLNUM);
     twt += wt[i];
@@ -87,27 +87,16 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 	*tr_mean = temp1 / ttreat;
 	*con_mean = temp0 / tcon;
 	*value = effect;
-	*risk = 4 * twt * max_y * max_y - alpha * twt * effect * effect +
-	        (1 - alpha) * (1 + train_to_est_ratio) * twt * (tr_var /ttreat  + con_var / (twt - ttreat));
+	*risk = 4 * twt * max_y * max_y - alpha * twt * effect * effect;
 
+  /*
 	printf("\n%f\t value\n", *value);
 	printf("%f\t risk\n", *risk);
 	printf("%f\t tr_mean\n", *tr_mean);
 	printf("%f\t con_mean\n", *con_mean);
 	//*/
 }
-int compare_double(const void *a,const void *b) {
-  double *x = (double *) a;
-  double *y = (double *) b;
-  // return *x - *y; // this is WRONG...
-  if (*x < *y) return -1;
-  else if (*x > *y) return 1; return 0;
-}
-int compare_int( const void* a, const void* b )
-{
-  if( *(int*)a == *(int*)b ) return 0;
-  return *(int*)a < *(int*)b ? -1 : 1;
-}
+
 
 void user(int n, double *y[], double *x, int nclass, int edge, double *improve, double *split,
 		int *csplit, double myrisk, double *wt, double *treatment, int minsize, double alpha,
@@ -162,7 +151,7 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		///*
 		right_tr += wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + SMLNUM);
 		right_con += wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + SMLNUM);
-		right_tr_sum += *y[i] * wt[i] * treatment[i] * completeCase[i]/ propensity[i] / (censoringProb[i])+ SMLNUM;
+		right_tr_sum += *y[i] * wt[i] * treatment[i] * completeCase[i]/ propensity[i] / (censoringProb[i]+ SMLNUM);
 		right_con_sum += *y[i] * wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] +SMLNUM);
 		//*/
 	}
@@ -228,12 +217,13 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		  left_con_sum += temp2;
 		  right_con_sum -= temp2;
       //*/
+      printf("above the loop\n");
 		  if (x[i + 1] != x[i] && left_n >= edge &&
         (int) left_tr2 >= min_node_size &&
         (int) left_wt - (int) left_tr2 >= min_node_size &&
         (int) right_tr2 >= min_node_size &&
         (int) right_wt - (int) right_tr2 >= min_node_size) {
-
+        printf("in the loop\n");
 		    left_temp = left_tr_sum / left_tr - left_con_sum / left_con;
 		    right_temp = right_tr_sum / right_tr -right_con_sum / right_con;
 

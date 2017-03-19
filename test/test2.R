@@ -4,7 +4,7 @@ p <- 10# number of total covariates
 pt <- 4# number of covariates affecting treatment effects
 py <- 6# number of covariates affecting outcomes but not treatment effects
 asym <- .5 # whether treatment effects are distributed asymmetrically across treated and control
-n <- 1000 # total size of the dataset
+n <- 6000 # total size of the dataset
 propens <- .5 #treatment probability
 sd = 30
 treatsize <- .5 # treatment effect size
@@ -40,7 +40,7 @@ y_ <- rweibull(n, shape=1, scale = lambdaT * exp( mu + asym * w_ * tau + (1-asym
 Censor = rweibull(n, shape=1, scale=lambdaC)   #censoring time
 time = pmin(y,Censor)  #observed time is min of censored and true
 event = as.numeric(time==y)   # set to 1 if event is observed
-event = rep(1,length(y))
+# event = rep(1,length(y))
 
 f <- ""
 nextx <- ""
@@ -86,6 +86,17 @@ cv.option.temp = "CT"
 
 tree2 <- causalTree(as.formula(paste("y~",paste(f))),
                     data=dataTrain, treatment=dataTrain$w,
-                    split.Rule="survival", split.Honest=F, cv.option="CT", minsize = 20,
+                    split.Rule="survival", split.Honest=F, cv.option="CT", minsize = 400,
                     split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
                     completeCase = dataTrain$completeCase)
+tree3 <- causalTree(as.formula(paste("y~",paste(f))),
+                    data=dataTrain, treatment=dataTrain$w,
+                    split.Rule="CT", split.Honest=F, cv.option="CT", minsize = 50,
+                    split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
+                    completeCase = dataTrain$completeCase)
+dataxx<-subset(dataTrain,dataTrain$completeCase==1)
+tree4 <- causalTree(as.formula(paste("y~",paste(f))),
+                    data=dataxx, treatment=dataxx$w,
+                    split.Rule="survival", split.Honest=F, cv.option="CT", minsize = 50,
+                    split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataxx$propensity,
+                    completeCase = dataxx$completeCase)
