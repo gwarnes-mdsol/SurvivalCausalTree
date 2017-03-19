@@ -4,6 +4,7 @@
 #include <math.h>
 #include "causalTree.h"
 #include "causalTreeproto.h"
+#define SMLNUM (1e-10)
 
 static double *sums, *wtsums, *treatment_effect;
 static double *wts, *trs, *trsums;
@@ -51,11 +52,11 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 	double pp = 0.;
 	for (i = 0; i < n; i++) {
 
-		temp1 += *y[i] * wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + 1e-10);
-		temp0 += *y[i] * wt[i] * (1 - treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + 1e-10);
+		temp1 += *y[i] * wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + SMLNUM);
+		temp0 += *y[i] * wt[i] * (1 - treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + SMLNUM);
     twt += wt[i];
-		ttreat += wt[i] * treatment[i] / propensity[i] * completeCase[i] / (censoringProb[i] + 1e-10);
-		tcon += wt[i] * (1-treatment[i]) / (1-propensity[i]) * completeCase[i] / (censoringProb[i] + 1e-10);
+		ttreat += wt[i] * treatment[i] / propensity[i] * completeCase[i] / (censoringProb[i] + SMLNUM);
+		tcon += wt[i] * (1-treatment[i]) / (1-propensity[i]) * completeCase[i] / (censoringProb[i] + SMLNUM);
 		tr_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * treatment[i] * completeCase[i] ;
 		con_sqr_sum += (*y[i]) * (*y[i]) * wt[i] * (1- treatment[i]) * completeCase[i];
     //*/
@@ -160,10 +161,10 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		//*/
 
 		///*
-		right_tr += wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i]);
-		right_con += wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i]);
-		right_tr_sum += *y[i] * wt[i] * treatment[i] * completeCase[i]/ propensity[i] / (censoringProb[i]);
-		right_con_sum += *y[i] * wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i]);
+		right_tr += wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + SMLNUM);
+		right_con += wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + SMLNUM);
+		right_tr_sum += *y[i] * wt[i] * treatment[i] * completeCase[i]/ propensity[i] / (censoringProb[i])+ SMLNUM;
+		right_con_sum += *y[i] * wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] +SMLNUM);
 		//*/
 	}
 
@@ -185,24 +186,24 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		left_con = 0;
 		left_tr2 = 0;
 		for (i = 0; right_n > edge; i++) {
-
+      printf("%f\t", censoringProb[i]);
 		  left_wt += wt[i];
 		  right_wt -= wt[i];
 		  left_tr2 += wt[i] * treatment[i];  // used for node size condition
 		  right_tr2 -= wt[i] * treatment[i]; // used for node size condition
 
-      left_tr += wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i]);
-      left_con += wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i]);
-      right_tr -= wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i]);
+      left_tr += wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + SMLNUM);
+      left_con += wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + SMLNUM);
+      right_tr -= wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + SMLNUM);
       right_con -= wt[i] * (1-treatment[i]) / (1-propensity[i]);
 
 		  left_n++;
 		  right_n--;
 
-		  temp = *y[i] * wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i]);
+		  temp = *y[i] * wt[i] * treatment[i] * completeCase[i] / propensity[i] / (censoringProb[i] + SMLNUM);
 		  left_tr_sum += temp;
 		  right_tr_sum -= temp;
-		  temp2 = *y[i] * wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i]);
+		  temp2 = *y[i] * wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + SMLNUM);
 		  left_con_sum += temp2;
 		  right_con_sum -= temp2;
 		  //*/
@@ -227,7 +228,7 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		  temp2 = *y[i] * wt[i] * (1-treatment[i]) / (1-propensity[i]);
 		  left_con_sum += temp2;
 		  right_con_sum -= temp2;
-
+      //*/
 		  if (x[i + 1] != x[i] && left_n >= edge &&
         (int) left_tr2 >= min_node_size &&
         (int) left_wt - (int) left_tr2 >= min_node_size &&
