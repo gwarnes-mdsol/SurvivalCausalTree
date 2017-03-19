@@ -115,10 +115,16 @@ for (i = n1; i < n2; i++) {
 if (me->num_obs < ct.min_split || tempcp <= ct.alpha || nodenum > ct.maxnode) {
   me->complexity = ct.alpha;
   *sumrisk = me->risk;
-
+  printf("\n Entered no splitting condition\n");
+  printf("%f\t ct.alpha\n", ct.alpha);
+  printf("%d\t me.num_obs\n", me->num_obs);
+  printf("%d\t ct.min_split\n", ct.min_split);
+  printf("%f\t tempcp\n", tempcp);
+  printf("%d\t ct.maxnode\n", ct.maxnode);
+  printf("%d\t nodenum\n",nodenum);
   /*
    * make sure the split doesn't have random pointers to somewhere
-   * i.e., don't trust that whoever allocated memory set it to zero
+   * i.e., don't trust that whoever allocated memory set it to NULL
    */
   me->leftson = (pNode)  NULL;
   me->rightson = (pNode) NULL;
@@ -224,6 +230,9 @@ me->complexity = (me->risk - (left_risk + right_risk)) /
 
 
 if (me->complexity <= ct.alpha) {
+  printf("all in vain \n");
+  printf("ct.alpha \t %f\n", ct.alpha);
+  printf("me->complexity \t %f\n", me->complexity);
   /*
    * All was in vain!  This node doesn't split after all.
    */

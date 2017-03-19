@@ -200,6 +200,8 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     }
     ct.max_y = temp2;
 
+    //printf("\n temp2 ct.max_y %f\n", ct.max_y);
+
 
     /*
      * allocate some scratch
@@ -343,7 +345,7 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     }
     tree->complexity = tree->risk;
     ct.alpha = ct.complexity * tree->risk;
-
+    //printf("\n causalTree.c ct.alpha %f\n",ct.alpha);
     /*
      * Do the basic tree
      */

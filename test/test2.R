@@ -40,6 +40,7 @@ y_ <- rweibull(n, shape=1, scale = lambdaT * exp( mu + asym * w_ * tau + (1-asym
 Censor = rweibull(n, shape=1, scale=lambdaC)   #censoring time
 time = pmin(y,Censor)  #observed time is min of censored and true
 event = as.numeric(time==y)   # set to 1 if event is observed
+event = rep(1,length(y))
 
 f <- ""
 nextx <- ""
