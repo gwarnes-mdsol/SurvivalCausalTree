@@ -6,5 +6,5 @@ This code is based on rpart package from CRAN, and Susan Athey's causalTree pack
 
 In addition, the propensity score in causalTree package has to be the same for all samples, in this package we fixed this problem so that it can be specified as a vector.
 
-Use the script in test2 for a demo.
+Use the script in the "test" folder for a demo.
                           
