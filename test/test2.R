@@ -1,7 +1,7 @@
 # Generate data
 # parameters for data generating
 p <- 10# number of total covariates
-pt <- 1# number of covariates affecting treatment effects
+pt <- 5# number of covariates affecting treatment effects
 py <- 4# number of covariates affecting outcomes but not treatment effects
 asym <- .5 # whether treatment effects are distributed asymmetrically across treated and control
 n <- 6000 # total size of the dataset
@@ -84,19 +84,8 @@ names(dataTest)=name
 cv.option.temp = "CT"
 
 
-tree2 <- causalTree(as.formula(paste("y~",paste(f))),
+tree<- causalTree(as.formula(paste("y~",paste(f))),
                     data=dataTrain, treatment=dataTrain$w,
-                    split.Rule="survival", split.Honest=F, cv.option="CT", minsize = 500,
+                    split.Rule="survival", split.Honest=F, cv.option="CT", minsize = 100,
                     split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
                     completeCase = dataTrain$completeCase)
-tree3 <- causalTree(as.formula(paste("y~",paste(f))),
-                    data=dataTrain, treatment=dataTrain$w,
-                    split.Rule="CT", split.Honest=F, cv.option="CT", minsize = 50,
-                    split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
-                    completeCase = dataTrain$completeCase)
-dataxx<-subset(dataTrain,dataTrain$completeCase==1)
-tree4 <- causalTree(as.formula(paste("y~",paste(f))),
-                    data=dataxx, treatment=dataxx$w,
-                    split.Rule="CT", split.Honest=F, cv.option="CT", minsize = 50,
-                    split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataxx$propensity,
-                    completeCase = dataxx$completeCase)

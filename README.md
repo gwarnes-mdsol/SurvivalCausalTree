@@ -1,14 +1,10 @@
 # SurvivalCausalTree
 
-This repository implemented the survival causal tree (SCT) method proposed in Bioinformatics paper. The main computation part is written in C to improve efficiency.For replication purpose, please see http://nugget.unisa.edu.au/Thus/SCT.zip
+This repository implemented the survival causal tree (SCT) method proposed in Bioinformatics paper. The main computation part is written in C which significantly improves efficiency. The old code is at http://nugget.unisa.edu.au/Thus/SCT.zip
 
 This code is based on rpart package from CRAN, and Susan Athey's causalTree package at https://github.com/susanathey/causalTree.
 
+In addition, the propensity score in causalTree package has to be the same for all samples, in this package we fixed this problem so that it can be specified as a vector.
 
-
-tree <- causalTree(as.formula(paste("y~",paste(f))),
-                          data=dataTrain, treatment=dataTrain$w,
-                          split.Rule="survival", split.Honest=F, cv.option=cv.option.temp, minsize = minsize.temp,
-                          split.alpha = 1, cv.alpha = 1, xval=0, cp=0,propensity = rep(.5,999),completeCase = rep(1,999))
+Use the script in test2 for a demo.
                           
-where completeCase is a vector storing the completeCase indicator for each sample,  propensity is a vector storing the propensity score.
