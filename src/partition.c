@@ -62,7 +62,7 @@ for (i = n1; i < n2; i++) {
   } else if (split_Rule == 2) {
     // ct
     (*ct_eval) (n, ct.ytemp, me->response_est, me->controlMean, me->treatMean,
-     &(me->risk), ct.wtemp, ct.trtemp, ct.max_y, alpha, train_to_est_ratio);
+     &(me->risk), ct.wtemp, ct.trtemp, ct.max_y, alpha, train_to_est_ratio,ct.propensitytemp);
   } else if (split_Rule == 3) {
     // fit
     (*ct_eval) (n, ct.ytemp, me->response_est, me->controlMean, me->treatMean,

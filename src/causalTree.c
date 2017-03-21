@@ -309,7 +309,7 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     } else if (split_Rule == 2) {
         // ct:
         (*ct_eval) (n, ct.ydata, tree->response_est, tree->controlMean, tree->treatMean,
-         &(tree->risk), wt, treatment, ct.max_y, split_alpha, train_to_est_ratio);
+         &(tree->risk), wt, treatment, ct.max_y, split_alpha, train_to_est_ratio, ct.propensity);
     } else if (split_Rule == 3) {
         //fit
         (*ct_eval) (n, ct.ydata, tree->response_est, tree->controlMean, tree->treatMean,
@@ -337,7 +337,7 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     } else if (split_Rule == 9) {
         // user (temporarily set as CT)
         (*ct_eval) (n, ct.ydata, tree->response_est, tree->controlMean, tree->treatMean,
-         &(tree->risk), wt, treatment, ct.max_y, split_alpha, train_to_est_ratio, propensity, censoringProb, completeCase);
+         &(tree->risk), wt, treatment, ct.max_y, split_alpha, train_to_est_ratio, ct.propensity, censoringProb, completeCase);
         //printf("%d\t",completeCase[1]);
     } else if (split_Rule == 10) {
         // userD (temporarily set as CTD)
