@@ -96,17 +96,10 @@ tree<- causalTree(as.formula(paste("y~",paste(f))),
                     split.Rule="survival", split.Honest=F, cv.option="CT", minsize = 100,
                     split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
                     completeCase = dataTrain$completeCase)
-<<<<<<< HEAD
-=======
+
 tree3 <- causalTree(as.formula(paste("y~",paste(f))),
                     data=dataTrain, treatment=dataTrain$w,
                     split.Rule="CT", split.Honest=F, cv.option="CT", minsize = 500,
                     split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
                     completeCase = dataTrain$completeCase)
-dataxx<-subset(dataTrain,dataTrain$completeCase==1)
-tree4 <- causalTree(as.formula(paste("y~",paste(f))),
-                    data=dataxx, treatment=dataxx$w,
-                    split.Rule="CT", split.Honest=F, cv.option="CT", minsize = 50,
-                    split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataxx$propensity,
-                    completeCase = dataxx$completeCase)
->>>>>>> iss01
+
