@@ -308,8 +308,10 @@ causalTree <- function(formula, data, weights, treatment, subset,
     #     censoringProb[i] <- control.survest(Y[i])
     # }
     censoringProb <- censoringProbability(Y,treatment,completeCase)
-    censoringProb <- rep(1,length(censoringProb))
-    print("hello world")
+    # censoringProb <- rep(1,length(censoringProb))
+    # completeCase <- rep(1,length(completeCase))
+    # completeCase <- as.integer(completeCase)
+
     ctfit <- .Call(C_causalTree,
 					   ncat = as.integer(cats * !isord),
 					   split_Rule = as.integer(split.Rule.int), # tot, ct, fit, tstats, totD, ctD, fitD, tstatsD

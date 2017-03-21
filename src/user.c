@@ -57,7 +57,6 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
     twt += wt[i];
 		ttreat += wt[i] * treatment[i] / propensity[i] * completeCase[i] / (censoringProb[i] + SMLNUM);
 		tcon += wt[i] * (1-treatment[i]) / (1-propensity[i]) * completeCase[i] / (censoringProb[i] + SMLNUM);
-
     //*/
 
     /*
@@ -87,17 +86,18 @@ userss(int n, double *y[], double *value,  double *con_mean, double *tr_mean,
 	*tr_mean = temp1 / ttreat;
 	*con_mean = temp0 / tcon;
 	*value = effect;
-	*risk = 4 * twt * max_y * max_y - alpha * twt * effect * effect;
+	// this risk calculation doesn't make sense.
+	//*risk = 4 * twt * max_y * max_y - alpha * twt * effect * effect;
+	*risk = n-sqrt(n);
 
   // twt means "total weight"
+	/*
 	printf("\n%f\t value\n", *value);
 	printf("%f\t risk\n", *risk);
 	printf("%f\t tr_mean\n", *tr_mean);
 	printf("%f\t con_mean\n", *con_mean);
 	printf("%f\t twt\n", twt);
 	printf("%f\t max_y\n", max_y);
-
-
 	//*/
 }
 
@@ -198,29 +198,6 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
 		  temp2 = *y[i] * wt[i] * (1-treatment[i]) * completeCase[i] / (1-propensity[i]) / (censoringProb[i] + SMLNUM);
 		  left_con_sum += temp2;
 		  right_con_sum -= temp2;
-		  //*/
-		  /*
-		  left_wt += wt[i]; //number of samples in left node
-		  right_wt -= wt[i]; //number of samples in right node
-		  left_tr2 += wt[i] * treatment[i];  // number of treated samples in left node
-		  right_tr2 -= wt[i] * treatment[i]; // number of treated samples in left node
-
-		  left_tr += wt[i] * treatment[i] / propensity[i];
-		  right_tr -= wt[i] * treatment[i] / propensity[i];
-
-		  left_con += wt[i] * (1-treatment[i]) / (1-propensity[i]);
-		  right_con -= wt[i] * (1-treatment[i]) / (1-propensity[i]);
-
-		  left_n++;
-		  right_n--;
-
-		  temp = *y[i] * wt[i] * treatment[i] / propensity[i];
-		  left_tr_sum += temp;
-		  right_tr_sum -= temp;
-		  temp2 = *y[i] * wt[i] * (1-treatment[i]) / (1-propensity[i]);
-		  left_con_sum += temp2;
-		  right_con_sum -= temp2;
-      //*/
       /*
       printf("left_tr_sum\t %f\n", left_tr_sum);
       printf("left_tr\t %f\n", left_tr);
@@ -234,11 +211,9 @@ void user(int n, double *y[], double *x, int nclass, int edge, double *improve, 
         (int) right_tr2 >= min_node_size &&
         (int) right_wt - (int) right_tr2 >= min_node_size) {
         //printf("in the loop\n");
-		    left_temp = 1.;
-		    right_temp = 1.;
-		    //left_temp = left_tr_sum / left_tr - left_con_sum / left_con;
+		    left_temp = left_tr_sum / left_tr - left_con_sum / left_con;
 
-		    //right_temp = right_tr_sum / right_tr -right_con_sum / right_con;
+		    right_temp = right_tr_sum / right_tr -right_con_sum / right_con;
 
 		    left_effect = alpha * left_temp * left_temp * left_wt;
 		    right_effect = alpha * right_temp * right_temp * right_wt;

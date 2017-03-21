@@ -165,6 +165,7 @@ nodesplit(me, nodenum, n1, n2, &nleft, &nright);
 /*
  * split the leftson
  */
+//printf("%f\n",tempcp);
 me->leftson = (pNode) CALLOC(1, nodesize);
 (me->leftson)->parent = me;
 (me->leftson)->complexity = tempcp - ct.alpha;
@@ -227,17 +228,26 @@ if ((me->rightson)->complexity > (me->leftson)->complexity) {
   }
 }
 
-me->complexity = (me->risk - (left_risk + right_risk)) /
-  (left_split + right_split + 1);
+me->complexity = (me->risk - (left_risk + right_risk)) / (left_split + right_split + 1);
 
 
 if (me->complexity <= ct.alpha) {
+
   printf("all in vain \n");
   printf("ct.alpha \t %f\n", ct.alpha);
   printf("me->complexity \t %f\n", me->complexity);
+  printf("left_split \t %d\n", left_split);
+  printf("right_split \t %d\n", right_split);
+  printf("left_risk \t %f\n", left_risk);
+  printf("right_risk \t %f\n", right_risk);
+  printf("me risk \t %f\n", me->risk);
+
+  //*/
+
   /*
    * All was in vain!  This node doesn't split after all.
    */
+
   free_tree(me, 0);
   *sumrisk = me->risk;
   for (i = n1; i < n2; i++) {
@@ -247,6 +257,7 @@ if (me->complexity <= ct.alpha) {
     ct.which[j] = nodenum;      /* revert to the old nodenumber */
   }
   return 0;               /* return # of splits */
+
 } else {
   *sumrisk = left_risk + right_risk;
   return left_split + right_split + 1;

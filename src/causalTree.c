@@ -201,7 +201,7 @@ causalTree(SEXP ncat2, SEXP split_Rule2, SEXP bucketnum2, SEXP bucketMax2, SEXP 
     }
     ct.max_y = temp2;
 
-    printf("\n temp2 ct.max_y %f\n", ct.max_y);
+    //printf("\n temp2 ct.max_y %f\n", ct.max_y);
 
 
     /*
