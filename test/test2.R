@@ -58,25 +58,7 @@ time = pmin(y,censor)  #observed time is min of censored and true
 event = as.numeric(time==y)   # set to 1 if event is observed
 # event = rep(1,length(y))
 
-f <- ""
-nextx <- ""
-if (p>1) {
-  for (ii in 1:(p-1)) {
-    nextx <- paste("x",ii, sep="")
-    if (ii==1) {name <- nextx}
-    if (ii>1) {name <- c(name, nextx)}
-    f <- paste(f, nextx, "+", sep="")
-  }
-  f <- paste(f, "x", ii+1, sep="")
-} else if (p==1) {
-  f <- "x1"
-}
-
-for (ii in 1:p) {
-  nextx <- paste("x",ii, sep="")
-  if (ii==1) {name <- nextx}
-  if (ii>1) {name <- c(name, nextx)}
-}
+f <- paste("x", 1:p, sep="", collapse="+")
 
 name <- c( name,  "y", "w", "completeCase", "tau_true", "propensity")
 
@@ -91,13 +73,13 @@ names(dataTrain)=name
 cv.option.temp = "CT"
 
 
-tree<- causalTree(as.formula(paste("y~",paste(f))),
+tree<- causalTree(as.formula(paste("y~",f)),
                     data=dataTrain, treatment=dataTrain$w,
                     split.Rule="survival", split.Honest=F, cv.option="CT", minsize = 100,
                     split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
                     completeCase = dataTrain$completeCase)
 
-tree3 <- causalTree(as.formula(paste("y~",paste(f))),
+tree3 <- causalTree(as.formula(paste("y~",f)),
                     data=dataTrain, treatment=dataTrain$w,
                     split.Rule="CT", split.Honest=F, cv.option="CT", minsize = 500,
                     split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
