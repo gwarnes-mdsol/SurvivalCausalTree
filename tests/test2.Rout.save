@@ -1,0 +1,169 @@
+
+R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(survivalCausalTree)
+Loading required package: rpart
+Loading required package: rpart.plot
+Loading required package: data.table
+Loading required package: survival
+> set.seed(42)  # ensure reproducability
+> 
+> # Generate data
+> # parameters for data generating
+> # <<<<<<< HEAD
+> # p <- 10# number of total covariates
+> # pt <- 5# number of covariates affecting treatment effects
+> # py <- 4# number of covariates affecting outcomes but not treatment effects
+> # =======
+> p <- 5# number of total covariates
+> pt <- 2# number of covariates affecting treatment effects
+> py <- 2# number of covariates affecting outcomes but not treatment effects
+> # >>>>>>> iss01
+> asym <- .5 # whether treatment effects are distributed asymmetrically across treated and control
+> n <- 10000 # total size of the dataset
+> propens <- .5 #treatment probability
+> treatsize <- .5 # treatment effect size
+> levsize <- .3
+> 
+> # draw treatment W
+> w <- rbinom(n, 1, propens)
+> w_ <- 1-w
+> 
+> # draw covariates X
+> X <- matrix(rnorm(n * p), nrow = n, ncol = p)
+> 
+> # generate treatment effects as function of X
+> if (p<pt+py) print("error: p>=pt+py required")
+> tau <- 0
+> for (iii in 1:pt) {
++   tau <- tau + treatsize*pmax(X[,iii],array(0,n))*(2*X[,iii])
++ }
+> 
+> # generate average value of outcomes
+> mu <- treatsize*rowSums(X[,1:pt]) + levsize*rowSums(X[,(pt+1):(pt+py)])
+> 
+> y <- vector(length = n)
+> y_ <- vector(length = n)
+> censor <- vector(length = n)
+> scale <- vector(length = n)
+> scale_ <- vector(length = n)
+> 
+> scale1 = 15
+> for (i in 1:n){
++   scale[i] <- mu[i] + asym * w[i] * tau[i] + (asym-1) * (1-w[i]) * tau[i]
++   scale_[i] <- mu[i] + asym * w_[i] * tau[i] + (asym-1) *(1-w_[i]) * tau[i]
++   # y[i] <- runif(1,50,1 / exp(-scale1 - scale[i]))
++   y[i] <- rweibull(1, shape = 6, scale = 1 / exp(-scale - scale[i]))
++   y_[i] <- rweibull(1, shape = 6, scale = 1/ exp(-scale - scale_[i]))
++   if (y[i] > 3650)
++     y[i] = 3650
++   if (y_[i] > 3650)
++     y[i] = 3650
++   censor[i] <- runif(1,365,3650)
++ }
+> 
+> 
+> # generate
+> time = pmin(y,censor)  #observed time is min of censored and true
+> event = as.numeric(time==y)   # set to 1 if event is observed
+> # event = rep(1,length(y))
+> 
+> f <- paste("x", 1:p, sep="", collapse="+")
+> 
+> name <- c(paste("x", 1:p, sep=""),  "y", "w", "completeCase", "tau_true", "propensity")
+> 
+> ntau_true <- (1-2*w)*(y_ - y)
+> 
+> ntr <- round(.5*n)
+> 
+> dataTrain <- data.frame(X[1:ntr,], y[1:ntr], w[1:ntr], event[1:ntr], ntau_true[1:ntr], propens)
+> 
+> names(dataTrain)=name
+> 
+> cv.option.temp = "CT"
+> 
+> 
+> tree<- causalTree(as.formula(paste("y~",f)),
++                     data=dataTrain, treatment=dataTrain$w,
++                     split.Rule="survival", split.Honest=F, cv.option="CT", minsize = 100,
++                     split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
++                     completeCase = dataTrain$completeCase)
+> 
+> tree3 <- causalTree(as.formula(paste("y~",f)),
++                     data=dataTrain, treatment=dataTrain$w,
++                     split.Rule="CT", split.Honest=F, cv.option="CT", minsize = 500,
++                     split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
++                     completeCase = dataTrain$completeCase)
+> 
+> tree
+n= 5000 
+
+node), split, n, deviance, yval
+      * denotes terminal node
+
+   1) root 5000 4929.2890  5.185139000  
+     2) x1< 1.716451 4766 4696.9640  2.124394000  
+       4) x2< 1.732609 4558 4490.4870  0.684273700  
+         8) x2< 1.13428 4130 4065.7350  0.371240500  
+          16) x1< 1.241924 3860 3797.8710  0.219783000  
+            32) x1< 0.6194086 3199 3142.4400  0.095242450  
+              64) x2< 0.6557784 2744 2691.6170  0.033340210  
+               128) x2< 0.3566814 2369 2320.3280  0.011909760  
+                 256) x1< 0.2992181 1993 1948.3570 -0.006572826  
+                   512) x4>=1.191235 229  213.8673 -0.066351390 *
+                   513) x4< 1.191235 1764 1722.0000 -0.002726125  
+                    1026) x2>=0.1539045 237  221.6052 -0.055024950 *
+                    1027) x2< 0.1539045 1527 1487.9230  0.003985090  
+                      2054) x4< -0.3501082 628  602.9401 -0.021372260  
+                        4108) x3>=0.3760412 218  203.2352 -0.041881550 *
+                        4109) x3< 0.3760412 410  389.7515 -0.002510414 *
+                      2055) x4>=-0.3501082 899  869.0167  0.028440810  
+                        4110) x5>=0.4825697 277  260.3567  0.007122135 *
+                        4111) x5< 0.4825697 622  597.0601  0.039451770  
+                          8222) x4>=0.3122655 320  302.1115  0.015904620 *
+                          8223) x4< 0.3122655 302  284.6219  0.060605610 *
+                 257) x1>=0.2992181 376  356.6093  0.082829750 *
+               129) x2>=0.3566814 375  355.6351  0.163026800 *
+              65) x2>=0.6557784 455  433.6693  0.496404200  
+               130) x4< -0.1186531 206  191.6473  0.361375400 *
+               131) x4>=-0.1186531 249  233.2203  0.644937300 *
+            33) x1>=0.6194086 661  635.2901  0.808392400  
+              66) x2< 0.2940365 455  433.6693  0.530481200  
+               132) x1< 0.9008854 227  211.9335  0.331163900 *
+               133) x1>=0.9008854 228  212.9003  0.731223600 *
+              67) x2>=0.2940365 206  191.6473  1.466944000 *
+          17) x1>=1.241924 270  253.5683  2.509024000 *
+         9) x2>=1.13428 428  407.3118  3.538650000 *
+       5) x2>=1.732609 208  193.5778 35.427600000 *
+     3) x1>=1.716451 234  218.7029 71.729770000 *
+> tree3
+n= 5000 
+
+node), split, n, deviance, yval
+      * denotes terminal node
+
+1) root 5000 266449500000 10.30543000  
+  2) x1< 0.8348242 3981 212147500000  2.88362900  
+    4) x2< 0.6557784 2957 157578500000  0.11370590  
+      8) x1< 0.05497792 1924 102530000000  0.01939858 *
+      9) x1>=0.05497792 1033  55048570000  0.27380110 *
+    5) x2>=0.6557784 1024  54568840000 10.90903000 *
+  3) x1>=0.8348242 1019  54300940000 39.27513000 *
+> 
+> proc.time()
+   user  system elapsed 
+  4.636   0.379   5.013 

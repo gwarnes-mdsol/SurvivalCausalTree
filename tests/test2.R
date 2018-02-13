@@ -1,4 +1,5 @@
 library(survivalCausalTree)
+set.seed(42)  # ensure reproducability
 
 # Generate data
 # parameters for data generating
@@ -87,3 +88,5 @@ tree3 <- causalTree(as.formula(paste("y~",f)),
                     split.alpha = 1, cv.alpha = 1, xval=0, cp=0, propensity = dataTrain$propensity,
                     completeCase = dataTrain$completeCase)
 
+tree
+tree3
