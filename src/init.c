@@ -32,7 +32,7 @@ static const R_CallMethodDef CallEntries[] = {
 
 #include <Rversion.h>
 void
-R_init_causalTree(DllInfo * dll)
+R_init_survivalCausalTree(DllInfo * dll)
 {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);

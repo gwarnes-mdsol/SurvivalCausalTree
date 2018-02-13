@@ -336,8 +336,7 @@ causalTree <- function(formula, data, weights, treatment, subset,
 					   as.double(cv.alpha),
 					   as.integer(HonestSampleSize),
 					   censoringProb,
-					   completeCase,
-					   PACKAGE="survivalCausalTree"
+					   completeCase
 					   )
 
 		nsplit <- nrow(ctfit$isplit) # total number of splits, primary and surrogate

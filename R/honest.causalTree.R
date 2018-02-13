@@ -339,8 +339,7 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 					   as.double(xvar), # for model daa
 					   as.double(split.alpha),
 					   as.double(cv.alpha),
-					   as.integer(HonestSampleSize),
-					   PACKAGE="survivalCausalTree"
+					   as.integer(HonestSampleSize)
 					   )
 
 		nsplit <- nrow(ctfit$isplit) # total number of splits, primary and surrogate
