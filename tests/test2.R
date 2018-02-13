@@ -68,7 +68,7 @@ ntau_true <- (1-2*w)*(y_ - y)
 
 ntr <- round(.5*n)
 
-dataTrain <- data.frame(X[1:ntr,], y[1:ntr], w[1:ntr], event[1:ntr], tau_true[1:ntr], propens)
+dataTrain <- data.frame(X[1:ntr,], y[1:ntr], w[1:ntr], event[1:ntr], ntau_true[1:ntr], propens)
 
 names(dataTrain)=name
 
