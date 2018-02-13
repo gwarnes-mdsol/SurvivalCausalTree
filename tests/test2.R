@@ -1,14 +1,16 @@
+library(survivalCausalTree)
+
 # Generate data
 # parameters for data generating
-<<<<<<< HEAD
-p <- 10# number of total covariates
-pt <- 5# number of covariates affecting treatment effects
-py <- 4# number of covariates affecting outcomes but not treatment effects
-=======
+# <<<<<<< HEAD
+# p <- 10# number of total covariates
+# pt <- 5# number of covariates affecting treatment effects
+# py <- 4# number of covariates affecting outcomes but not treatment effects
+# =======
 p <- 5# number of total covariates
 pt <- 2# number of covariates affecting treatment effects
 py <- 2# number of covariates affecting outcomes but not treatment effects
->>>>>>> iss01
+# >>>>>>> iss01
 asym <- .5 # whether treatment effects are distributed asymmetrically across treated and control
 n <- 10000 # total size of the dataset
 propens <- .5 #treatment probability
@@ -60,9 +62,9 @@ event = as.numeric(time==y)   # set to 1 if event is observed
 
 f <- paste("x", 1:p, sep="", collapse="+")
 
-name <- c( name,  "y", "w", "completeCase", "tau_true", "propensity")
+name <- c(paste("x", 1:p, sep=""),  "y", "w", "completeCase", "tau_true", "propensity")
 
-tau_true <- (1-2*w)*(y_ - y)
+ntau_true <- (1-2*w)*(y_ - y)
 
 ntr <- round(.5*n)
 
