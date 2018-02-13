@@ -2,13 +2,13 @@
 #  The honest re-estimation function.
 #
 
-honest.causalTree <- function(formula, data, weights, treatment, subset, 
+honest.causalTree <- function(formula, data, weights, treatment, subset,
 							  est_data, est_weights, est_treatment, est_subset,
 							  na.action = na.causalTree, split.Rule, split.Honest,
 							  HonestSampleSize, split.Bucket, bucketNum = 10,
 							  bucketMax = 40, cv.option, cv.Honest, minsize = 2L, model = FALSE,
-							  x = FALSE, y = TRUE, propensity, control, split.alpha = 0.5, 
-							  cv.alpha = 0.5, cost, ...)  { 
+							  x = FALSE, y = TRUE, propensity, control, split.alpha = 0.5,
+							  cv.alpha = 0.5, cost, ...)  {
 
 	Call <- match.call()
 
@@ -16,9 +16,9 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 				  names(Call), nomatch = 0L)
 
 	if (indx[1] == 0L) stop("a 'formula' argument is required")
-	temp <- Call[c(1L, indx)]      
-	temp$na.action <- na.action  
-	temp[[1L]] <- quote(stats::model.frame) 
+	temp <- Call[c(1L, indx)]
+	temp$na.action <- na.action
+	temp[[1L]] <- quote(stats::model.frame)
 	m <- eval.parent(temp)
 
 
@@ -40,13 +40,13 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 	# requirement for treatment status
 	if (missing(treatment)) {
 		stop("You should input the treatment status vector for data:
-			 1 represent treated and 0 represent controlled.")   
+			 1 represent treated and 0 represent controlled.")
 	}
 	if (sum(treatment %in% c(0,1)) != nobs) {
 		stop("The treatment status should be 1 or 0 only: 1 represent treated and 0 represent controlled.")
 	}
 	if (sum(treatment) == 0 || sum(treatment) == nobs) {
-		stop("The data only contains treated cases or controlled cases, please check 'treatment' again.") 
+		stop("The data only contains treated cases or controlled cases, please check 'treatment' again.")
 	}
 
 	# ---------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 	if (missing(est_data)) {
 		stop("Note give the honest estimation data set!\n")
 	}
-	
+
 	indx2 <- match(c("formula", "est_data", "est_weights", "est_subset"),
 				   names(Call), nomatch = 0L)
 
@@ -72,7 +72,7 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 	est_X <- causalTree.matrix(m2)
 	est_nobs <- nrow(est_X)
 	est_nvar <- ncol(est_X)
-	
+
 	if (missing(est_treatment)) {
 	    stop("Not give the treatment status of honest estimation data set!\n ")
 	}
@@ -80,9 +80,9 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 	    stop("The treatment status should be 1 or 0 only: 1 represent treated and 0 represent controlled.")
 	}
 	if (sum(est_treatment) == 0 || sum(est_treatment) == est_nobs) {
-	    stop("The data only contains treated cases or controlled cases, please check 'est_treatment' again.") 
+	    stop("The data only contains treated cases or controlled cases, please check 'est_treatment' again.")
 	}
-	
+
 
 	if (est_nvar != nvar) {
 		stop("Honest estimation data set should have same variables as training data!\n")
@@ -103,7 +103,7 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 		split.Bucket <- FALSE
 		bucketNum <- 0
 		bucketMax <- 0
-	} 
+	}
 	split.Bucket.num <- pmatch(split.Bucket, c(T, F))
 	if (is.na(split.Bucket.num))
 		stop("Invalid split.Honest input, split.Honest can be only TRUE or FALSE.")
@@ -117,14 +117,14 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 		if (missing(bucketMax)) {
 			# maximum number of buckets
 			bucketMax <- 100
-		} 
+		}
 		if (missing(bucketNum)) {
 			# number of treat cases or control cases in one bucket
 			# Numbuckets = max(minsize, min(round(numtreated/bucketNum),round(numcontrol/bucketNum),bucketMax))
 			bucketNum <- 5
 			# at least 5 obs in one bucket
 		}
-		split.Rule <- paste(split.Rule, 'D', sep = '') 
+		split.Rule <- paste(split.Rule, 'D', sep = '')
 	}
 
 	split.Rule.int <- pmatch(split.Rule, c("TOT", "CT", "fit", "tstats", "TOTD", "CTD", "fitD", "tstatsD", "user", "userD"))
@@ -149,7 +149,7 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 
 	## check the Split.Honest == T/F
 	split.Honest.num <- pmatch(split.Honest, c(T, F))
-	if(is.na(split.Honest.num)) 
+	if(is.na(split.Honest.num))
 		stop("Invalid split.Honest input, split.Honest can be only TRUE or FALSE.")
 
 	if (split.Honest == TRUE && split.Rule.int %in% c(2, 3, 4, 6, 7, 8, 9, 10)) {
@@ -165,7 +165,7 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 		}
 	} else if (split.Rule.int %in% c(2, 3, 4, 6, 7, 8, 9, 10)){
 		# split.Honest = False
-		if (split.alpha != 1) 
+		if (split.alpha != 1)
 			warning("For dishonest(adaptive) splitting, split.alpha =  1.");
 		split.alpha <- 1
 	}
@@ -184,17 +184,17 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 
 	# ------------------------------------- cv begins -------------------------------------- #
 	if (missing(cv.option)) {
-		# temporarily, no crossvalidation 
+		# temporarily, no crossvalidation
 		warning("Miss 'cv.option', choose not to do cross validations.")
 		cv.option <-"none"
 		xval <- 0
-	} 
+	}
 
 	if(missing(cv.Honest)) {
 		cv.Honest <- TRUE
 	}
 	cv.Honest.num <- pmatch(cv.Honest, c(T, F))
-	if (is.na(cv.Honest.num)) 
+	if (is.na(cv.Honest.num))
 		stop ("Invalid cv.Honest. cv.Honest should be TRUE or FALSE.")
 
 	if (cv.option == 'CT' || cv.option == 'fit') {
@@ -207,20 +207,20 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 	}
 
 	cv.option.num <- pmatch(cv.option, c("TOT", "matching", "fitH", "fitA", "CTH", "CTA", "userH", "userA", "none"))
-	if(is.na(cv.option.num)) stop("Invalid cv option.") 
+	if(is.na(cv.option.num)) stop("Invalid cv option.")
 
 	# check cv.alpha
 	if (cv.option.num %in% c(1, 2, 4, 6)) {
 		if (!missing(cv.alpha))
 			warning("cv.alpha is not used in your chosen cross validation method.")
-	} 
+	}
 
 	if (missing(cv.alpha)) {
 		cv.alpha <- 0.5
 	}
 
 	if (missing(HonestSampleSize)) {
-		# default should be the # of samples in training 
+		# default should be the # of samples in training
 		HonestSampleSize <- est_nobs
 	}
 
@@ -234,7 +234,7 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 		stop("HonestSampleSize should be an integer.")
 	# -------------------------------- cv checking ends -------------------------------- #
 
-	init <- get(paste("causalTree", method, sep = "."), envir = environment())(Y, offset, wt) 
+	init <- get(paste("causalTree", method, sep = "."), envir = environment())(Y, offset, wt)
 
 	ns <- asNamespace("causalTree")
 	if (!is.null(init$print)) environment(init$print) <- ns
@@ -272,9 +272,9 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 			treat_idx <- which(treatment == 1)
 			xgroups <- rep(0, nobs)
 			xgroups[control_idx] <- sample(rep(1L:xval, length = length(control_idx)), length(control_idx), replace = F)
-			xgroups[treat_idx] <- sample(rep(1L:xval, length = length(treat_idx)), length(treat_idx), replace = F)  
+			xgroups[treat_idx] <- sample(rep(1L:xval, length = length(treat_idx)), length(treat_idx), replace = F)
 		} else if (length(xval) == nobs) {
-			## pass xgroups by xval 
+			## pass xgroups by xval
 			xgroups <- xval
 			xval <- length(unique(xgroups))
 		} else {
@@ -339,7 +339,8 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 					   as.double(xvar), # for model daa
 					   as.double(split.alpha),
 					   as.double(cv.alpha),
-					   as.integer(HonestSampleSize)
+					   as.integer(HonestSampleSize),
+					   PACKAGE="survivalCausalTree"
 					   )
 
 		nsplit <- nrow(ctfit$isplit) # total number of splits, primary and surrogate
@@ -388,7 +389,7 @@ honest.causalTree <- function(formula, data, weights, treatment, subset,
 			ncat <- ncat + nadd
 		} else catmat <- ctfit$csplit
 
-		if (nsplit == 0L) {   
+		if (nsplit == 0L) {
 			frame <- data.frame(row.names = 1L,
 								var = "<leaf>",
 								n = ctfit$inode[, 5L],
