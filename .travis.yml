@@ -8,7 +8,10 @@ r:
   - release
   - devel
 
-#sudo: required
+env:
+  - global:
+    # this should be changead to true once things get cleaned up
+    - warnings_are_errors: false
 
 env: _R_CHECK_CRAN_INCOMING_=FALSE
 
