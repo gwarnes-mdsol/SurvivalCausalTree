@@ -9,11 +9,8 @@ r:
   - devel
 
 env:
-  global:
-    # this should be changead to true once things get cleaned up
     - warnings_are_errors: false
-
-env: _R_CHECK_CRAN_INCOMING_=FALSE
+    - _R_CHECK_CRAN_INCOMING_=FALSE
 
 r_github_packages:
   - jimhester/covr
