@@ -201,7 +201,7 @@ causalTree <- function(formula, data, weights, treatment, subset,
 
 	init <- get(paste("causalTree", method, sep = "."), envir = environment())(Y, offset, wt)
 
-	ns <- asNamespace("causalTree")
+	ns <- asNamespace("survivalCausalTree")
 	if (!is.null(init$print)) environment(init$print) <- ns
 	if (!is.null(init$summary)) environment(init$summary) <- ns
 	if (!is.null(init$text)) environment(init$text) <- ns
